@@ -36,7 +36,7 @@ class FilmControllerTest {
     public void shouldCreateFilmWithLongDescription() throws Exception, ValidationException {
         Film film = getTestFilm();
         String str = film.getDescription();
-        for (int i=0; i<=10; i++){
+        for (int i = 0; i <= 10; i++) {
             str = str + " " + str;
         }
         film.setDescription(str);
@@ -62,7 +62,7 @@ class FilmControllerTest {
     @Test
     public void shouldCreateFilmWithOldDate() throws Exception, ValidationException {
         Film film = getTestFilm();
-        film.setReleaseDate(LocalDate.of(1895,12, 28).minusDays(100));
+        film.setReleaseDate(LocalDate.of(1895, 12, 28).minusDays(100));
         final ValidationException exception1 = assertThrows(
                 ValidationException.class,
                 () -> controller.create(film));
@@ -98,7 +98,7 @@ class FilmControllerTest {
         Film newFilm = getUpdatedTestFilm();
 
         String str = newFilm.getDescription();
-        for (int i=0; i<=10; i++){
+        for (int i = 0; i <= 10; i++) {
             str = str + " " + str;
         }
         newFilm.setDescription(str);
@@ -130,7 +130,7 @@ class FilmControllerTest {
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
 
-        newFilm.setReleaseDate(LocalDate.of(1895,12, 28).minusDays(100));
+        newFilm.setReleaseDate(LocalDate.of(1895, 12, 28).minusDays(100));
         final ValidationException exception1 = assertThrows(
                 ValidationException.class,
                 () -> controller.update(newFilm));
