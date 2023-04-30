@@ -22,7 +22,7 @@ public class UserController {
     private int id;
 
     public UserController() {
-        this.id=0;
+        this.id = 0;
         users = new HashMap<>();
 
     }
@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping("/users")
     public List<User> findAll() {
         List<User> usersList = new ArrayList<>();
-        for (User user:users.values()) {
+        for (User user : users.values()) {
             usersList.add(user);
         }
         log.info("Список пользователей выведен");
@@ -40,11 +40,11 @@ public class UserController {
     @PostMapping(value = "/user")
     public User create(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
-               user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())){
+                user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Данные пользователя {} не прошли валидацию", user.getLogin());
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
-        if (user.getName().equals(null)  || user.getName().isBlank()){
+        if (user.getName().equals(null) || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
         }
@@ -58,19 +58,19 @@ public class UserController {
     @PutMapping(value = "/film")
     public User update(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
-                user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())){
+                user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Данные пользователя {} не прошли валидацию", user.getLogin());
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
-        if (user.getName().equals(null)  || user.getName().isBlank()){
+        if (user.getName().equals(null) || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
         }
         int userId = user.getId();
-        if (userId!=0 || users.containsKey(userId)) {
+        if (userId != 0 || users.containsKey(userId)) {
             users.put(userId, user);
             log.info("Данные пользователя {} изменены", user.getName());
-        } else{
+        } else {
             log.info("Невозможно обновить пользователя. Нужно или указать id, или создать запрос POST");
             throw new ValidationException("Невозможно обновить пользователя. Нужно или указать id, или создать запрос POST");
         }
