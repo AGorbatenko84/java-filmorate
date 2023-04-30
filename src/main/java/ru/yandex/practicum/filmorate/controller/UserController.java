@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-public class UserController {    
+public class UserController {
     private final Map<Integer, User> users;
     private int id;
 
@@ -33,13 +33,14 @@ public class UserController {
         return usersList;
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping("/users")
     public User create(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
                 user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
             log.info("Данные пользователя {} не прошли валидацию", user.getLogin());
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
+
         if (user.getName().equals(null) || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
@@ -51,7 +52,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping(value = "/users")
+    @PutMapping("/users")
     public User update(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
                 user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
