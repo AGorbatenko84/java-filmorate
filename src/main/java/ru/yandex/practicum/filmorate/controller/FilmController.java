@@ -54,7 +54,7 @@ public class FilmController {
             throw new ValidationException("Фильм не прошел валидацию");
         }
         int filmId = film.getId();
-        if (filmId != 0 || films.containsKey(filmId)) {
+        if (filmId != 0 & films.containsKey(filmId)) {
             films.put(filmId, film);
             log.info("Фильм {} изменен", film.getName());
         } else {
