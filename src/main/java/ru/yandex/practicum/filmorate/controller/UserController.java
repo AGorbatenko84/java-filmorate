@@ -37,7 +37,7 @@ public class UserController {
         return usersList;
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping(value = "/users")
     public User create(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
                 user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
@@ -55,7 +55,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping(value = "/film")
+    @PutMapping(value = "/users")
     public User update(@RequestBody User user) throws ValidationException {
         if (user.getEmail().equals(null) || !user.getEmail().contains("@") || user.getLogin().equals(null) ||
                 user.getLogin().isBlank() || user.getBirthday().isAfter(LocalDate.now())) {
