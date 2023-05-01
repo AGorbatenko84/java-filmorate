@@ -41,7 +41,7 @@ public class UserController {
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
 
-        if (user.getName().equals(null) || user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
         }
@@ -59,12 +59,12 @@ public class UserController {
             log.info("Данные пользователя {} не прошли валидацию", user.getLogin());
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
-        if (user.getName().equals(null) || user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
         }
         int userId = user.getId();
-        if (userId != 0 || users.containsKey(userId)) {
+        if (userId != 0 & users.containsKey(userId)) {
             users.put(userId, user);
             log.info("Данные пользователя {} изменены", user.getName());
         } else {
