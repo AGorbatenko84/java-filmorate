@@ -1,68 +1,74 @@
 package ru.yandex.practicum.filmorate.controller;
 
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 class FilmControllerTest {
-    private final FilmController controller = new FilmController();
+    private FilmController controller;
+    private Validator validator;
 
-    @Test
-    public void shouldCreateFilmWithNullName() throws Exception, ValidationException {
-        Film film = getTestFilm();
-        film.setName("   ");
-
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(film));
-
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
-
-        film.setName("");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(film));
-        assertEquals("Фильм не прошел валидацию", exception2.getMessage());
+    @BeforeEach
+    void setUp() {
+        controller = new FilmController();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Test
-    public void shouldCreateFilmWithLongDescription() throws Exception, ValidationException {
+    public void shouldCreateFilmWithNullName() {
+        Film film = getTestFilm();
+        film.setName("   ");
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertEquals(1, violations.size(), "Валидация некорректна");
+
+        film.setName("");
+
+        Set<ConstraintViolation<Film>> violations2 = validator.validate(film);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
+    }
+
+    @Test
+    public void shouldCreateFilmWithLongDescription() {
         Film film = getTestFilm();
         String str = film.getDescription();
-        for (int i=0; i<=10; i++){
+        for (int i = 0; i <= 10; i++) {
             str = str + " " + str;
         }
         film.setDescription(str);
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(film));
-
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertEquals(1, violations.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldCreateFilmWithNegativeDuration() throws Exception, ValidationException {
+    public void shouldCreateFilmWithNegativeDuration() {
         Film film = getTestFilm();
         film.setDuration(-1);
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(film));
 
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertEquals(1, violations.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldCreateFilmWithOldDate() throws Exception, ValidationException {
+    public void shouldCreateFilmWithOldDate() {
         Film film = getTestFilm();
-        film.setReleaseDate(LocalDate.of(1895,12, 28).minusDays(100));
+        film.setReleaseDate(LocalDate.of(1895, 12, 28).minusDays(100));
         final ValidationException exception1 = assertThrows(
                 ValidationException.class,
                 () -> controller.create(film));
@@ -70,44 +76,35 @@ class FilmControllerTest {
         assertEquals("Фильм не прошел валидацию", exception1.getMessage());
     }
 
-
     @Test
-    public void shouldUpdateFilmWithNullName() throws Exception, ValidationException {
+    public void shouldUpdateFilmWithNullName() throws ValidationException {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
         newFilm.setName("   ");
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newFilm));
-
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        assertEquals(1, violations.size(), "Валидация некорректна");
 
         newFilm.setName("");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newFilm));
-        assertEquals("Фильм не прошел валидацию", exception2.getMessage());
+        Set<ConstraintViolation<Film>> violations2 = validator.validate(newFilm);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldUpdateFilmWithLongDescription() throws Exception, ValidationException {
+    public void shouldUpdateFilmWithLongDescription() throws ValidationException {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
 
         String str = newFilm.getDescription();
-        for (int i=0; i<=10; i++){
+        for (int i = 0; i <= 10; i++) {
             str = str + " " + str;
         }
         newFilm.setDescription(str);
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newFilm));
-
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        assertEquals(1, violations.size(), "Валидация некорректна");
     }
 
     @Test
@@ -117,11 +114,8 @@ class FilmControllerTest {
         Film newFilm = getUpdatedTestFilm();
 
         newFilm.setDuration(-1);
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newFilm));
-
-        assertEquals("Фильм не прошел валидацию", exception1.getMessage());
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        assertEquals(1, violations.size(), "Валидация некорректна");
     }
 
     @Test
@@ -130,7 +124,7 @@ class FilmControllerTest {
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
 
-        newFilm.setReleaseDate(LocalDate.of(1895,12, 28).minusDays(100));
+        newFilm.setReleaseDate(LocalDate.of(1895, 12, 28).minusDays(100));
         final ValidationException exception1 = assertThrows(
                 ValidationException.class,
                 () -> controller.update(newFilm));
@@ -139,7 +133,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void shouldUpdateFilmWithNullId() throws Exception, ValidationException {
+    public void shouldUpdateFilmWithNullId() throws ValidationException {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
@@ -152,8 +146,7 @@ class FilmControllerTest {
         assertEquals("Невозможно обновить фильм. Нужно или указать id, или создать запрос POST", exception1.getMessage());
     }
 
-
-    private Film getTestFilm() {
+    private static Film getTestFilm() {
         Film film = new Film();
         film.setName("new film");
         film.setDescription("a1b2c3 d4e5f6g7");
@@ -162,7 +155,7 @@ class FilmControllerTest {
         return film;
     }
 
-    private Film getUpdatedTestFilm() {
+    private static Film getUpdatedTestFilm() {
         Film film = new Film();
         film.setId(1);
         film.setName("Film Updated");

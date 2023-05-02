@@ -1,69 +1,66 @@
 package ru.yandex.practicum.filmorate.controller;
 
-
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserControllerTest {
-    private final UserController controller = new UserController();
+    private UserController controller;
+    private Validator validator;
+
+    @BeforeEach
+    void setUp() {
+        controller = new UserController();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
     @Test
-    public void shouldCreateUserWithNullEmail() throws Exception, ValidationException {
+    public void shouldCreateUserWithNullEmail() {
         User user = getTestUser();
         user.setEmail("");
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(user));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size(), "Валидация некорректна");
 
         user.setName("assdaasdsad");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(user));
-        assertEquals("Данные пользователя не прошли валидацию", exception2.getMessage());
+        Set<ConstraintViolation<User>> violations2 = validator.validate(user);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldCreateUserWithNullLogin() throws Exception, ValidationException {
+    public void shouldCreateUserWithNullLogin() {
         User user = getTestUser();
         user.setLogin("    ");
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(user));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size(), "Валидация некорректна");
 
         user.setLogin("");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(user));
-        assertEquals("Данные пользователя не прошли валидацию", exception2.getMessage());
+        Set<ConstraintViolation<User>> violations2 = validator.validate(user);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldCreateUserWithLaterDate() throws Exception, ValidationException {
+    public void shouldCreateUserWithLaterDate() {
         User user = getTestUser();
         user.setBirthday(LocalDate.now().plusDays(100));
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.create(user));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldCreateUserWithNullName() throws Exception, ValidationException {
+    public void shouldCreateUserWithNullName() {
         User user1 = getTestUser();
         user1.setName("    ");
         controller.create(user1);
@@ -77,45 +74,35 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldUpdateUserWithNullEmail() throws Exception, ValidationException {
+    public void shouldUpdateUserWithNullEmail() {
         User user = getTestUser();
         controller.create(user);
         User newUser = getUpdatedTestUser();
 
         newUser.setEmail("");
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newUser));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        assertEquals(1, violations.size(), "Валидация некорректна");
 
         newUser.setName("assdaasdsad");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newUser));
-        assertEquals("Данные пользователя не прошли валидацию", exception2.getMessage());
+        Set<ConstraintViolation<User>> violations2 = validator.validate(newUser);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
-    public void shouldUpdateUserWithNullLogin() throws Exception, ValidationException {
+    public void shouldUpdateUserWithNullLogin() {
         User user = getTestUser();
         controller.create(user);
         User newUser = getUpdatedTestUser();
 
         newUser.setLogin("    ");
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newUser));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        assertEquals(1, violations.size(), "Валидация некорректна");
 
         newUser.setLogin("");
-        final ValidationException exception2 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newUser));
-        assertEquals("Данные пользователя не прошли валидацию", exception2.getMessage());
+        Set<ConstraintViolation<User>> violations2 = validator.validate(newUser);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
@@ -125,11 +112,8 @@ public class UserControllerTest {
         User newUser = getUpdatedTestUser();
 
         newUser.setBirthday(LocalDate.now().plusDays(100));
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
-                () -> controller.update(newUser));
-
-        assertEquals("Данные пользователя не прошли валидацию", exception1.getMessage());
+        Set<ConstraintViolation<User>> violations2 = validator.validate(newUser);
+        assertEquals(1, violations2.size(), "Валидация некорректна");
     }
 
     @Test
