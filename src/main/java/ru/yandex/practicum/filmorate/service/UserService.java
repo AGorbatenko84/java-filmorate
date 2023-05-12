@@ -109,7 +109,7 @@ public class UserService {
     }
 
     private Set<Long> filterCommonUsersIds(Set<Long> setIds1, Set<Long> setIds2) {
-        setIds1.retainAll( setIds2);
+        setIds1.retainAll(setIds2);
         return setIds1;
     }
 }
