@@ -31,19 +31,13 @@ public class FilmService {
     }
 
     public void createFilm(@Valid Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм не прошел валидацию");
-            throw new ValidationException("Фильм не прошел валидацию");
-        }
+        validReleaseDate(film);        
         filmStorage.addFilm(film);
         log.info("Фильм {} добавлен", film.getName());
     }
 
     public void updateFilm(@Valid Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм не прошел валидацию");
-            throw new ValidationException("Фильм не прошел валидацию");
-        }
+        validReleaseDate(film);
         long filmId = film.getId();
         if (filmId > 0 && filmStorage.getListIds().contains(filmId)) {
             filmStorage.updateFilm(film);
@@ -81,5 +75,12 @@ public class FilmService {
 
     public List<Film> getListBestFilms(int count) {
         return filmStorage.getListBestFilms(count);
+    }
+    
+    private void validReleaseDate(Film film){
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.info("Фильм не прошел валидацию");
+            throw new ValidationException("Фильм не прошел валидацию");
+        }
     }
 }
