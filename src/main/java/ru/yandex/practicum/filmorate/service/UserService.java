@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,10 +65,11 @@ public class UserService {
     }
 
     public void createFriend(long id, long friendId) {
-        if (id > 0 && friendId > 0) {
-            userStorage.getUserById(id).addFriendById(friendId);
-            userStorage.getUserById(friendId).addFriendById(id);
-        } else throw new NotFoundException("Такого id не существует");
+        if (!userStorage.getListIds().contains(id) || !userStorage.getListIds().contains(friendId)) {
+            throw new NotFoundException("Такого id не существует");
+        }
+        userStorage.getUserById(id).addFriendById(friendId);
+        userStorage.getUserById(friendId).addFriendById(id);
     }
 
     public void deleteFriend(long id, long friendId) {
@@ -108,7 +110,9 @@ public class UserService {
     }
 
     private Set<Long> filterCommonUsersIds(Set<Long> setIds1, Set<Long> setIds2) {
-        setIds1.retainAll(setIds2);
-        return setIds1;
+        Set<Long> set1 = new HashSet<>(setIds1);
+        Set<Long> set2 = new HashSet<>(setIds2);
+        set1.retainAll(set2);
+        return set1;
     }
 }
