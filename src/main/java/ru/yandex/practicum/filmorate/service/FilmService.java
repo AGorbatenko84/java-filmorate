@@ -31,7 +31,7 @@ public class FilmService {
     }
 
     public void createFilm(@Valid Film film) throws ValidationException {
-        validReleaseDate(film);        
+        validReleaseDate(film);
         filmStorage.addFilm(film);
         log.info("Фильм {} добавлен", film.getName());
     }
