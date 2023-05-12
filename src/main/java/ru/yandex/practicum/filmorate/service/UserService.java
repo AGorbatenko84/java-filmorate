@@ -109,14 +109,7 @@ public class UserService {
     }
 
     private Set<Long> filterCommonUsersIds(Set<Long> setIds1, Set<Long> setIds2) {
-        Set<Long> commonIds = new HashSet<>();
-        for (Long id1 : setIds1) {
-            for (Long id2 : setIds2) {
-                if (id1 == id2) {
-                    commonIds.add(id1);
-                }
-            }
-        }
-        return commonIds;
+        setIds1.retainAll( setIds2);
+        return setIds1;
     }
 }
