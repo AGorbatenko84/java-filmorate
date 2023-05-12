@@ -76,8 +76,8 @@ public class FilmService {
     public List<Film> getListBestFilms(int count) {
         return filmStorage.getListBestFilms(count);
     }
-  
-   private void validReleaseDate(Film film) {
+
+    private void validReleaseDate(Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.info("Фильм не прошел валидацию");
             throw new ValidationException("Фильм не прошел валидацию");
