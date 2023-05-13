@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -17,10 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class UserControllerTest {
     private UserController controller;
     private Validator validator;
+    private UserStorage userStorage;
 
     @BeforeEach
     void setUp() {
-        controller = new UserController();
+        userStorage = new InMemoryUserStorage();
+        controller = new UserController(new UserService(userStorage));
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }

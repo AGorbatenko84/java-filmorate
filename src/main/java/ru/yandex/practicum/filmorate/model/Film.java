@@ -3,15 +3,16 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
-    private int id;
+
+    private long id;
     @NotBlank
     private String name;
     @Size(max = 200)
@@ -19,6 +20,14 @@ public class Film {
     private LocalDate releaseDate;
     @Min(value = 0)
     private int duration;
+    @NotNull
+    private Set<Long> likes = new HashSet<>();
 
+    public void setLike(Long idUser) {
+        likes.add(idUser);
+    }
 
+    public void deleteLike(Long idUser) {
+        likes.remove(idUser);
+    }
 }

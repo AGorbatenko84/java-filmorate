@@ -4,8 +4,14 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -21,10 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FilmControllerTest {
     private FilmController controller;
     private Validator validator;
+    private UserStorage userStorage;
+    private FilmStorage filmStorage;
 
     @BeforeEach
     void setUp() {
-        controller = new FilmController();
+        userStorage = new InMemoryUserStorage();
+        filmStorage = new InMemoryFilmStorage();
+        controller = new FilmController(new FilmService(filmStorage, userStorage));
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -108,7 +118,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void shouldUpdateFilmWithNegativeDuration() throws Exception, ValidationException {
+    public void shouldUpdateFilmWithNegativeDuration() {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
@@ -119,7 +129,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void shouldUpdateFilmWithOldDate() throws Exception, ValidationException {
+    public void shouldUpdateFilmWithOldDate() {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
@@ -133,14 +143,14 @@ class FilmControllerTest {
     }
 
     @Test
-    public void shouldUpdateFilmWithNullId() throws ValidationException {
+    public void shouldUpdateFilmWithNullId() throws NotFoundException {
         Film film = getTestFilm();
         controller.create(film);
         Film newFilm = getUpdatedTestFilm();
         newFilm.setId(0);
 
-        final ValidationException exception1 = assertThrows(
-                ValidationException.class,
+        final NotFoundException exception1 = assertThrows(
+                NotFoundException.class,
                 () -> controller.update(newFilm));
 
         assertEquals("Невозможно обновить фильм. Нужно или указать id, или создать запрос POST", exception1.getMessage());

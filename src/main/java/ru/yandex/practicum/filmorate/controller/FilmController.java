@@ -2,62 +2,59 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
+@RequestMapping("/films")
 public class FilmController {
-    private final Map<Integer, Film> films;
-    private int id;
+    private final FilmService filmService;
 
-    public FilmController() {
-        this.id = 0;
-        films = new HashMap<>();
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> findAll() {
-        log.info("Список фильмов выведен");
-        return new ArrayList<>(films.values());
+        return filmService.findAllFilms();
     }
 
-    @PostMapping("/films")
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм не прошел валидацию");
-            throw new ValidationException("Фильм не прошел валидацию");
-        }
-        this.id++;
-        film.setId(this.id);
-        films.put(this.id, film);
-        log.info("Фильм {} добавлен", film.getName());
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        filmService.createFilm(film);
         return film;
     }
 
-    @PutMapping("/films")
-    public Film update(@Valid @RequestBody Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм не прошел валидацию");
-            throw new ValidationException("Фильм не прошел валидацию");
-        }
-        int filmId = film.getId();
-        if (filmId != 0 && films.containsKey(filmId)) {
-            films.put(filmId, film);
-            log.info("Фильм {} изменен", film.getName());
-        } else {
-            log.info("Невозможно обновить фильм. Нужно или указать id, или создать запрос POST");
-            throw new ValidationException("Невозможно обновить фильм. Нужно или указать id, или создать запрос POST");
-        }
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
+        filmService.updateFilm(film);
         return film;
     }
 
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable long id) {
+        return filmService.getFilmById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        filmService.createLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable long id, @PathVariable long userId) {
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getListBestFilms(count);
+    }
 }
