@@ -25,10 +25,6 @@ public class Film {
     private Set<Long> likes = new HashSet<>();
 
     private Integer rate;
-    @NotNull
-    private Mpa mpa;
-
-    private final Set<Genre> genres = new TreeSet<>();
 
     public void setLike(Long idUser) {
         likes.add(idUser);
