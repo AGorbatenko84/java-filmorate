@@ -8,6 +8,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Data
 public class Film {
@@ -22,6 +23,12 @@ public class Film {
     private int duration;
     @NotNull
     private Set<Long> likes = new HashSet<>();
+
+    private Integer rate;
+    @NotNull
+    private Mpa mpa;
+
+    private final Set<Genre> genres = new TreeSet<>();
 
     public void setLike(Long idUser) {
         likes.add(idUser);
