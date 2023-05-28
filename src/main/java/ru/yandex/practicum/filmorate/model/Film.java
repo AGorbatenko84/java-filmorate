@@ -23,6 +23,8 @@ public class Film {
     @NotNull
     private Set<Long> likes = new HashSet<>();
 
+    private Integer rate;
+
     public void setLike(Long idUser) {
         likes.add(idUser);
     }
