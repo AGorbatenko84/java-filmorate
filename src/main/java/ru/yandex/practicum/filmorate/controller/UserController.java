@@ -29,8 +29,7 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        userService.createUser(user);
-        return user;
+        return userService.createUser(user);
     }
 
     @PutMapping
@@ -57,7 +56,8 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getListFriends(@PathVariable long id) {
-        return userService.getListFriends(id);
+        List<User> friendsList = userService.getListFriends(id);
+        return friendsList;
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

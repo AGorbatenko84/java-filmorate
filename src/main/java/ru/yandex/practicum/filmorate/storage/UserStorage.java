@@ -12,11 +12,17 @@ public interface UserStorage {
 
     List getListIds();
 
-    void addUser(User user);
+    User addUser(User user);
 
-    void updateUser(User user);
+    User updateUser(User user);
 
     User getUserById(Long id);
 
     Set getUserFriendsIdsById(Long id);
+
+    void addFriend(Long id, Long friendId);
+
+    void deleteFriend(Long id, Long friendId);
+
+    List getListFriends(Long id);
 }

@@ -1,13 +1,17 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.impl;
 
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Qualifier("memory")
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films;
@@ -28,15 +32,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addFilm(Film film) {
+    public Film addFilm(Film film) {
         this.idFilm++;
         film.setId(this.idFilm);
         films.put(this.idFilm, film);
+        return film;
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         films.put(film.getId(), film);
+        return film;
     }
 
     @Override
@@ -55,5 +61,15 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addLikeToFilm(Film film, User user) {
+        films.get(film.getId()).setLike(user.getId());
+    }
+
+    @Override
+    public void deleteLikeToFilm(Film film, User user) {
+        films.get(film.getId()).deleteLike(user.getId());
     }
 }
