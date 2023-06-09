@@ -67,6 +67,7 @@ class UserDbStorageTest {
 
         assertEquals(user, testUser);
     }
+    
 
     @Test
     void shouldGetAll() {
