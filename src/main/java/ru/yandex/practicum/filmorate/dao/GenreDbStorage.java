@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class GenreDbStorage implements GenreStorage {
@@ -21,21 +22,15 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public List<Genre> findAll() {
         String sql = "SELECT * FROM genre";
-        return jdbcTemplate.query(sql, new RowMapper<Genre>() {
-            @Override
-            public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return GenreDbStorage.mapRowToGenre(rs, rowNum);
-            }
-        });
+        return jdbcTemplate.query(sql, (rs, rowNum) -> GenreDbStorage.mapRowToGenre(rs, rowNum));
     }
 
     @Override
-    public Genre findById(Integer id) {
+    public Optional<Genre> findById(Integer id) {
         String sql = "SELECT genre_id, name FROM genre WHERE genre_id = ?";
         return jdbcTemplate.query(sql, new GenreMapper(), id)
                 .stream()
-                .findAny()
-                .orElse(null);
+                .findAny();
     }
 
     static Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {

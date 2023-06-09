@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,10 +24,8 @@ public class GenreService {
     }
 
     public Genre findById(int id) {
-        Genre genre = genreStorage.findById(id);
-        if (genre == null) {
-            throw new NotFoundException("Жанр с таким id = " + id + " не найден.");
-        }
-        return genre;
+        Optional<Genre> genre = genreStorage.findById(id);
+
+        return genre.orElseThrow(() -> new NotFoundException("Жанр с id " + id + " не найден"));
     }
 }

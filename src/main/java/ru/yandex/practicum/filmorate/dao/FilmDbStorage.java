@@ -31,12 +31,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getListFilms() {
         String sql = "SELECT * FROM films JOIN mpa ON films.mpa_id = mpa.mpa_id";
-        List<Film> listFilm = jdbcTemplate.query(sql, new RowMapper<Film>() {
-            @Override
-            public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-                return FilmDbStorage.this.mapRowToFilm(resultSet, rowNum);
-            }
-        });
+        List<Film> listFilm = jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> FilmDbStorage.this.mapRowToFilm(resultSet, rowNum));
         return listFilm;
     }
 
@@ -57,13 +53,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private Mpa loadMpa(int mpaId) {
         String sql = "SELECT * FROM mpa";
-        List<Mpa> listMpa = jdbcTemplate.query(sql, new RowMapper<Mpa>() {
-            @Override
-            public Mpa mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-                return MpaDbStorage.mapRowToMpa(rs, rowNum);
-            }
-        });
+        List<Mpa> listMpa = jdbcTemplate.query(sql, (rs, rowNum) -> MpaDbStorage.mapRowToMpa(rs, rowNum));
         Mpa resultMpa = new Mpa();
         for (Mpa m : listMpa) {
             if (m.getId() == mpaId) {
@@ -84,7 +74,7 @@ public class FilmDbStorage implements FilmStorage {
         List<Integer> genreIds = jdbcTemplate.queryForList(sql, Integer.class, film.getId());
 
         for (Integer genreId : genreIds) {
-            film.getGenres().add(genreStorage.findById(genreId));
+            film.getGenres().add(genreStorage.findById(genreId).get());
         }
     }
 
@@ -104,23 +94,21 @@ public class FilmDbStorage implements FilmStorage {
                 + " VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement stmt = connection.prepareStatement(sqlFilm, new String[]{"film_id"});
-                stmt.setString(1, film.getName());
-                stmt.setString(2, film.getDescription());
-                stmt.setInt(3, film.getDuration());
-                stmt.setDate(4, Date.valueOf(film.getReleaseDate()));
-                stmt.setInt(5, film.getMpa().getId());
-                return stmt;
-            }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlFilm, new String[]{"film_id"});
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            stmt.setInt(3, film.getDuration());
+            stmt.setDate(4, Date.valueOf(film.getReleaseDate()));
+            stmt.setInt(5, film.getMpa().getId());
+            return stmt;
         }, keyHolder);
 
 
         Film filmBack = film;
         filmBack.setId(keyHolder.getKey().longValue());
         addFilmGenre(filmBack);
+
         return filmBack;
     }
 
@@ -154,19 +142,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Long id) {
+    public Optional<Film> getFilmById(Long id) {
         String sql = "SELECT * FROM films WHERE film_id = ?";
 
-        Film film = (Film) jdbcTemplate.query(sql, new Object[]{id}, new RowMapper<Film>() {
-                    @Override
-                    public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-                        return FilmDbStorage.this.mapRowToFilm(resultSet, rowNum);
-                    }
-                })
+        return jdbcTemplate.query(sql, new Object[]{id},
+                        (resultSet, rowNum) -> FilmDbStorage.this.mapRowToFilm(resultSet, rowNum))
                 .stream()
-                .findAny()
-                .orElse(null);
-        return film;
+                .findAny();
     }
 
     @Override
@@ -189,11 +171,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getListBestFilms(int count) {
-        List<Film> films = getListFilms();
-        return films.stream()
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
-
+        String sql = "SELECT COUNT(USER_ID) AS QUANTITY, F.*  \n" +
+                "FROM LIKES \n" +
+                "RIGHT JOIN FILMS F ON F.FILM_ID = LIKES.FILM_ID\n" +
+                "GROUP BY F.FILM_ID \n" +
+                "ORDER BY QUANTITY DESC\n" +
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, new Object[]{count},
+                (resultSet, rowNum) -> FilmDbStorage.this.mapRowToFilm(resultSet, rowNum));
     }
 }

@@ -100,7 +100,7 @@ class FilmDbStorageTest {
         film.getGenres().add(genre);
 
         Film saveFilm = filmDbStorage.addFilm(film);
-        Film getFilm = filmDbStorage.getFilmById(saveFilm.getId());
+        Film getFilm = filmDbStorage.getFilmById(saveFilm.getId()).get();
 
         assertEquals(getFilm.getName(), film.getName());
         assertEquals("G", getFilm.getMpa().getName());

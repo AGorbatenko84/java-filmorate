@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -48,11 +49,9 @@ public class FilmService {
     }
 
     public Film getFilmById(Long idFilm) {
-        Film film = filmStorage.getFilmById(idFilm);
-        if (film == null) {
-            throw new NotFoundException("Фильм с таким id = " + idFilm + " не найден.");
-        }
-        return film;
+        Optional<Film> film = filmStorage.getFilmById(idFilm);
+
+        return film.orElseThrow(() -> new NotFoundException("Фильм с id " + idFilm + " не найден"));
     }
 
     public void createLike(Long idFilm, Long idUser) {
@@ -62,7 +61,7 @@ public class FilmService {
         if (idUser <= 0 || !userStorage.getListIds().contains(idUser)) {
             throw new NotFoundException("Пользователь c id = " + idUser + " отсутствует");
         }
-        filmStorage.addLikeToFilm(filmStorage.getFilmById(idFilm), userStorage.getUserById(idUser));
+        filmStorage.addLikeToFilm(filmStorage.getFilmById(idFilm).get(), userStorage.getUserById(idUser));
     }
 
     public void deleteLike(Long idFilm, Long idUser) {
@@ -72,7 +71,7 @@ public class FilmService {
         if (idUser <= 0 || !userStorage.getListIds().contains(idUser)) {
             throw new NotFoundException("Пользователь c id = " + idUser + " отсутствует");
         }
-        filmStorage.deleteLikeToFilm(filmStorage.getFilmById(idFilm), userStorage.getUserById(idUser));
+        filmStorage.deleteLikeToFilm(filmStorage.getFilmById(idFilm).get(), userStorage.getUserById(idUser));
     }
 
     public List<Film> getListBestFilms(int count) {

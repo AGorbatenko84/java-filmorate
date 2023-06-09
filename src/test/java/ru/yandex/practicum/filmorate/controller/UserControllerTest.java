@@ -13,7 +13,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -142,11 +141,11 @@ public class UserControllerTest {
 
     private User getTestUser() {
         User user = User.builder()
-            .name("User 1")
-            .login("Login User 1")
-            .email("fdfafa@mail.ru")
-            .birthday(LocalDate.of(1984, 12, 1))
-            .build();
+                .name("User 1")
+                .login("Login User 1")
+                .email("fdfafa@mail.ru")
+                .birthday(LocalDate.of(1984, 12, 1))
+                .build();
         return user;
     }
 
