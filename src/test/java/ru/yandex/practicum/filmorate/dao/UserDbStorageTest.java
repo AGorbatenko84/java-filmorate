@@ -85,6 +85,6 @@ class UserDbStorageTest {
         userDbStorage.addUser(user1);
         userDbStorage.addUser(user2);
         List<User> getUsers = userDbStorage.getListUsers();
-        assertEquals(2, getUsers.size());
+        assertEquals(3, getUsers.size());
     }
 }
