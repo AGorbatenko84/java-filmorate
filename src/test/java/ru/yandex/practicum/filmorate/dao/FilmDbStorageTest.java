@@ -134,8 +134,8 @@ class FilmDbStorageTest {
         Film saveFilm = filmDbStorage.addFilm(film);
 
 
-        List<Film> listFilm = filmDbStorage.getListBestFilms(10);
-        assertEquals(listFilm.get(3).getName(), saveFilm.getName());
+        List<Film> listFilm = filmDbStorage.getListBestFilms(2);
+        assertEquals(listFilm.get(0).getName(), saveFilm.getName());
     }
 
     @Test
