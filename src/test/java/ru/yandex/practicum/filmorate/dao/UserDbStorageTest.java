@@ -67,7 +67,7 @@ class UserDbStorageTest {
 
         assertEquals(user, testUser);
     }
-    
+
     @Test
     void shouldGetAll() {
         User user1 = User.builder()
