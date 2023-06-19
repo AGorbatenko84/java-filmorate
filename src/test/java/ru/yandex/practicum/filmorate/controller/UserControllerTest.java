@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.impl.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
@@ -140,21 +140,24 @@ public class UserControllerTest {
     }
 
     private User getTestUser() {
-        User user = new User();
-        user.setName("User 1");
-        user.setLogin("Login User 1");
-        user.setEmail("fdfafa@mail.ru");
-        user.setBirthday(LocalDate.of(1984, 12, 1));
+        User user = User.builder()
+                .name("User 1")
+                .login("Login User 1")
+                .email("fdfafa@mail.ru")
+                .birthday(LocalDate.of(1984, 12, 1))
+                .build();
         return user;
     }
 
     private User getUpdatedTestUser() {
-        User user = new User();
-        user.setId(1);
-        user.setName("User 2");
-        user.setLogin("Login User 2");
-        user.setEmail("retrtetewtwt@mail.ru");
-        user.setBirthday(LocalDate.of(1985, 10, 25));
+
+        User user = User.builder()
+                .id(1L)
+                .name("User 2")
+                .login("Login User 2")
+                .email("retrtetewtwt@mail.ru")
+                .birthday(LocalDate.of(1985, 10, 25))
+                .build();
         return user;
     }
 }

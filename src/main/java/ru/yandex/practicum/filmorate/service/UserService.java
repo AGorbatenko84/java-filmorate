@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -19,7 +20,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("db") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -36,9 +37,9 @@ public class UserService {
             user.setName(user.getLogin());
             log.info("Пользователю {} присвоено имя {}", user.getLogin(), user.getLogin());
         }
-        userStorage.addUser(user);
+        User userBack = userStorage.addUser(user);
         log.info("Пользователь {} добавлен", user.getLogin());
-        return user;
+        return userBack;
     }
 
     public User updateUser(@Valid User user) {
@@ -68,24 +69,20 @@ public class UserService {
         if (!userStorage.getListIds().contains(id) || !userStorage.getListIds().contains(friendId)) {
             throw new NotFoundException("Такого id не существует");
         }
-        userStorage.getUserById(id).addFriendById(friendId);
-        userStorage.getUserById(friendId).addFriendById(id);
+        userStorage.addFriend(id, friendId);
+        log.info("Пользователь с id " + id + " добавил в друзья пользователя с id " + friendId);
     }
 
     public void deleteFriend(long id, long friendId) {
         if (id > 0 && friendId > 0) {
-            userStorage.getUserById(id).deleteFriendById(friendId);
-            userStorage.getUserById(friendId).deleteFriendById(id);
+            userStorage.deleteFriend(id, friendId);
         } else throw new NotFoundException("Такого id не существует");
     }
 
     public List<User> getListFriends(long id) {
         List<User> friendsList = new ArrayList<>();
         if (id > 0) {
-            Set<Long> idsFriends = userStorage.getUserById(id).getFriends();
-            for (Long idFriend : idsFriends) {
-                friendsList.add(userStorage.getUserById(idFriend));
-            }
+            friendsList = userStorage.getListFriends(id);
         } else throw new NotFoundException("Такого id не существует");
         return friendsList;
     }
