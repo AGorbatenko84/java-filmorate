@@ -1,20 +1,20 @@
 # Filmorate
-Backend service that works with movies and user ratings.
-### Functional:
-You can add, delete, update films and users,
-add or delete friends, also you can like films and get most popular films by likes.
-## Database schema
+Бэкенд-сервис, работающий с фильмами и пользовательскими рейтингами.
+### Функциональность:
+Вы можете добавлять, удалять, обновлять фильмы и пользователей, Добавляйте или удаляйте друзей, 
+а также вы можете ставить лайки фильмам и получать самые популярные фильмы по лайкам.
+## Схема базы данных
 ![Schema DB](src/main/resources/schema.png)
 
-### Technology stack:
+### Стек технологий:
 Java 11, Spring Framework, H2, Maven, JDBC, Mockito
 
-### System requirements:
+### Требования к системе:
 JDK 11
 
-### Startup instructions:
-1. Download zip-file  
-2. Unpack zip-file  
-3. Open app in IntellijIdea  
-4. Start app from main class  
-5. Test app with postman tests collection in postman package  
+### Инструкция по запуску:
+- Скачать zip-файл
+- Распаковать zip-файл
+- Открыть приложение в IntellijIdea
+- Запуск приложения из основного класса
+- Тестовое приложение с коллекцией тестов postman в пакете postman
